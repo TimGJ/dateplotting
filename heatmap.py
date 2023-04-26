@@ -10,6 +10,8 @@ import argparse
 import random
 
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def GenerateShapedRandoms(start, weeks, number):
     """
@@ -45,8 +47,8 @@ def GenerateShapedRandoms(start, weeks, number):
             # Generate a random day of the week
             day = random.choices(list(range(days_per_week)), weights=[1, 2, 3, 2, 1, 0, 0], k=1)[0]
             # Generate a random hour of the day
-            hour = random.choices(list(range(hours_per_day)), weights=[0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 2,
-                                                                       1, 1, 3, 4, 3, 2, 1, 0, 0, 0, 0, 0], k=1)[0]
+            hour = random.choices(list(range(hours_per_day)), weights=[0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 4, 2,
+                                                                       1, 1, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0], k=1)[0]
             # Generate a random minute of the hour
             minute = random.randrange(minutes_per_hour)
             # Generate a random second of the minute
@@ -68,10 +70,23 @@ if __name__ == '__main__':
     args = ap.parse_args()
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO,
                         format='%(asctime)s %(levelname)s %(message)s')
+
+    # Generate some random data with suitably shaped date/time distribution
+
     colours = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'pink', 'brown', 'black', 'white']
     sizes = ['small', 'medium', 'large']
     data = sorted([{'time': t, 'colour': random.choice(colours), 'size': random.choice(sizes)}
             for t in GenerateShapedRandoms(args.start, args.weeks, args.number)], key=lambda x: x['time'])
+
+    # Whack the data into a dataframe and plot it
+
     df = pd.DataFrame(data)
-    df['day'] = df['time'].dt.day_name()
+    df['dayname'] = df['time'].dt.day_name()
+    df['day'] = df['time'].dt.dayofweek
     df['hour'] = df['time'].dt.hour
+    s = sns.heatmap(df.groupby(['day', 'hour']).size().unstack(), cmap='bwr', annot=True, fmt='d',
+                yticklabels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
+    s.set_xlabel('Hour of the day')
+    s.set_ylabel('Day of the week')
+    s.set_title(f'Datahub heatmap for {args.number} events')
+    plt.show()
