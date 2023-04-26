@@ -84,7 +84,7 @@ if __name__ == '__main__':
     df['dayname'] = df['time'].dt.day_name()
     df['day'] = df['time'].dt.dayofweek
     df['hour'] = df['time'].dt.hour
-    s = sns.heatmap(df.groupby(['day', 'hour']).size().unstack(), cmap='bwr', annot=True, fmt='d',
+    s = sns.heatmap(df.groupby(['day', 'hour']).size().unstack(), cmap='Reds', annot=True, fmt='d',
                 yticklabels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
     s.set_xlabel('Hour of the day')
     s.set_ylabel('Day of the week')
