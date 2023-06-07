@@ -78,6 +78,7 @@ if __name__ == '__main__':
     data = sorted([{'time': t, 'colour': random.choice(colours), 'size': random.choice(sizes)}
             for t in GenerateShapedRandoms(args.start, args.weeks, args.number)], key=lambda x: x['time'])
 
+    logging.debug(f'Generated {len(data)} random events from {data[0]["time"]} to {data[-1]["time"]}')
     # Whack the data into a dataframe and plot it
 
     df = pd.DataFrame(data)
